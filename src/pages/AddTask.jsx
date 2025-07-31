@@ -11,12 +11,39 @@ const AddTask = () => {
             <div className="table-responsive">
                 <form>
                     <div className="mb-3">
-                        <label for="exampleFormControlInput1" className="form-label">Email address</label>
-                        <input type="email" className="form-control" id="exampleFormControlInput1" placeholder="name@example.com" />
+                        <label htmlFor="title" className="form-label">Titolo</label>
+                        <input
+                            type="text"
+                            className="form-control bg-dark text-light"
+                            id="title"
+                            placeholder="Inserisci il titolo della task..."
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                        />
                     </div>
                     <div className="mb-3">
-                        <label for="exampleFormControlTextarea1" className="form-label">Example textarea</label>
-                        <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        <label htmlFor="description" className="form-label">Descrizione</label>
+                        <textarea
+                            className="form-control bg-dark text-light"
+                            id="description"
+                            rows="3"
+                            placeholder="Inserisci una descrizione..."
+                            ref={descriptionRef}
+                        ></textarea>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="status" className="form-label">Stato</label>
+                        <select
+                            className="form-select bg-dark text-light"
+                            id="status"
+                            ref={statusRef}
+                            defaultValue=""
+                        >
+                            <option value="">Seleziona uno stato...</option>
+                            <option value="To do">To do</option>
+                            <option value="Doing">Doing</option>
+                            <option value="Done">Done</option>
+                        </select>
                     </div>
                 </form>
             </div>
