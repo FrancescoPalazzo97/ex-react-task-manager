@@ -14,6 +14,7 @@ const TaskRow = memo(({ task }) => {
                 return 'bg-secondary';
         }
     }
+
     return (
         <tr key={task.id}>
             <td>{task.title}</td>
