@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import useTasks from "../hooks/useTasks"
 const API_TASKS = import.meta.env.VITE_API_TASKS;
 
-const GlobalContext = createContext();
+export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
 
@@ -17,8 +17,4 @@ export const GlobalProvider = ({ children }) => {
             {children}
         </GlobalContext.Provider>
     )
-}
-
-export const useGlobalContext = () => {
-    return useContext(GlobalContext);
 }

@@ -1,4 +1,4 @@
-import { useGlobalContext } from "../contexts/GlobalContext";
+import { useGlobalContext } from "../hooks/useGlobalContext";
 import TaskRow from "../components/TaskRow";
 import { memo } from "react";
 
