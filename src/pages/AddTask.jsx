@@ -1,12 +1,16 @@
 import { useState, useRef } from "react";
 const symbols = `!@#$%^&*()-_=+[]{}|;:'\\",.<>?/\`~`;
+import { useGlobalContext } from "../hooks/useGlobalContext"
 
 const AddTask = () => {
     const [title, setTitle] = useState('');
     const [errors, setErrors] = useState({});
     const [successMessage, setSuccessMessage] = useState(``);
+    const [errorMessage, setErrorMessage] = useState(``);
     const descriptionRef = useRef();
     const statusRef = useRef();
+
+    const { addTask, getTasks } = useGlobalContext();
 
     const handleChange = e => {
         setErrors({});
@@ -17,21 +21,32 @@ const AddTask = () => {
             setErrors({ ...errors, title: `Non è possibile aggiungere caratteri speciali` });
     }
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
         setErrors({});
-        if (!title) return setErrors({ ...errors, title: `Aggiungi un titolo!!!` });
-        if (!statusRef.current.value) return setErrors({ ...errors, status: 'Si prega selezionare uno stato!' })
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        if (!title) setErrors({ ...errors, title: `Aggiungi un titolo!!!` });
+        if (!statusRef.current.value) setErrors({ ...errors, status: 'Si prega selezionare uno stato!' });
+
         const formData = {
             title,
             description: descriptionRef.current.value,
             status: statusRef.current.value
         }
-        console.log(formData);
-        setSuccessMessage(`Form inviato con successo!`);
-        setTitle(``);
-        descriptionRef.current.value = '';
-        statusRef.current.value = 'To do'
+
+        const data = await addTask(formData);
+
+        if (data.success) {
+            getTasks();
+            setSuccessMessage(`Form inviato con successo!`);
+            setTitle(``);
+            descriptionRef.current.value = '';
+            statusRef.current.value = 'To do'
+        } else {
+            setErrorMessage(data.message);
+        }
     }
 
     return (
@@ -42,6 +57,10 @@ const AddTask = () => {
                     {successMessage &&
                         <div className="mb-3 bg-success p-3 rounded">
                             <span >{successMessage}</span>
+                        </div>}
+                    {errorMessage &&
+                        <div className="mb-3 bg-danger p-3 rounded">
+                            <span >{errorMessage}</span>
                         </div>}
                     <div className="mb-3">
                         <label htmlFor="title" className="form-label">Titolo</label>

@@ -4,21 +4,29 @@ const API_TASKS = import.meta.env.VITE_API_TASKS;
 const useTasks = () => {
     const [tasks, setTasks] = useState(null);
 
-    async function fetchJson(url) {
-        const res = await fetch(url);
+    const getTasks = async () => {
+        const res = await fetch(API_TASKS);
         const data = await res.json();
-        return data;
+        setTasks(data);
     }
 
     useEffect(() => {
-        (async () => {
-            const data = await fetchJson(API_TASKS);
-            setTasks(data);
-        })();
+        getTasks();
     }, []);
 
-    const addTask = () => {
+    const addTask = async (taskObj = {}) => {
 
+        const res = await fetch(API_TASKS, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(taskObj)
+        });
+
+        const data = await res.json();
+        console.log(data);
+        return data;
     }
 
     const removeTask = () => {
@@ -29,7 +37,7 @@ const useTasks = () => {
 
     }
 
-    return [tasks, addTask, removeTask, updateTask];
+    return [tasks, getTasks, addTask, removeTask, updateTask];
 }
 
 export default useTasks;
