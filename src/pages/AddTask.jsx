@@ -51,60 +51,70 @@ const AddTask = () => {
 
     return (
         <div className="container mt-4">
-            <h1 className="mb-4 text-light">Aggiungi un Task</h1>
-            <div className="table-responsive">
-                <form onSubmit={handleSubmit}>
-                    {successMessage &&
-                        <div className="mb-3 bg-success p-3 rounded">
-                            <span >{successMessage}</span>
-                        </div>}
-                    {errorMessage &&
-                        <div className="mb-3 bg-danger p-3 rounded">
-                            <span >{errorMessage}</span>
-                        </div>}
-                    <div className="mb-3">
-                        <label htmlFor="title" className="form-label">Titolo</label>
-                        <input
-                            type="text"
-                            className="form-control bg-dark text-light"
-                            id="title"
-                            placeholder="Inserisci il titolo della task..."
-                            value={title}
-                            onChange={handleChange}
-                        />
-                        {errors.title && <span className="text-danger">{errors.title}</span>}
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="description" className="form-label">Descrizione</label>
-                        <textarea
-                            className="form-control bg-dark text-light"
-                            id="description"
-                            rows="3"
-                            placeholder="Inserisci una descrizione..."
-                            ref={descriptionRef}
-                        ></textarea>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="status" className="form-label">Stato</label>
-                        <select
-                            className="form-select bg-dark text-light"
-                            id="status"
-                            ref={statusRef}
-                            defaultValue="To do"
-                        >
-                            <option value="">Seleziona uno stato...</option>
-                            <option value="To do">To do</option>
-                            <option value="Doing">Doing</option>
-                            <option value="Done">Done</option>
-                        </select>
-                        {errors.status && <span className="text-danger">{errors.status}</span>}
-                    </div>
-                    <div className="mb-3">
-                        <button type="submit" className="btn btn-light">
-                            Aggiungi il task
-                        </button>
-                    </div>
-                </form>
+            <div className="row justify-content-center">
+                <div className="col-lg-8 col-xl-6">
+                    <h1 className="mb-4 text-light text-center">Aggiungi un Task</h1>
+
+                    {successMessage && (
+                        <div className="alert alert-success" role="alert">
+                            {successMessage}
+                        </div>
+                    )}
+
+                    {errorMessage && (
+                        <div className="alert alert-danger" role="alert">
+                            {errorMessage}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="needs-validation" noValidate>
+                        <div className="mb-3">
+                            <label htmlFor="title" className="form-label">Titolo</label>
+                            <input
+                                type="text"
+                                className={`form-control bg-dark text-light ${errors.title ? 'is-invalid' : ''}`}
+                                id="title"
+                                placeholder="Inserisci il titolo della task..."
+                                value={title}
+                                onChange={handleChange}
+                            />
+                            {errors.title && <div className="invalid-feedback d-block">{errors.title}</div>}
+                        </div>
+
+                        <div className="mb-3">
+                            <label htmlFor="description" className="form-label">Descrizione</label>
+                            <textarea
+                                className="form-control bg-dark text-light"
+                                id="description"
+                                rows="3"
+                                placeholder="Inserisci una descrizione..."
+                                ref={descriptionRef}
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="status" className="form-label">Stato</label>
+                            <select
+                                className={`form-select bg-dark text-light ${errors.status ? 'is-invalid' : ''}`}
+                                id="status"
+                                ref={statusRef}
+                                defaultValue="To do"
+                            >
+                                <option value="">Seleziona uno stato...</option>
+                                <option value="To do">To do</option>
+                                <option value="Doing">Doing</option>
+                                <option value="Done">Done</option>
+                            </select>
+                            {errors.status && <div className="invalid-feedback d-block">{errors.status}</div>}
+                        </div>
+
+                        <div className="d-grid">
+                            <button type="submit" className="btn btn-light btn-lg">
+                                Aggiungi il task
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     )
