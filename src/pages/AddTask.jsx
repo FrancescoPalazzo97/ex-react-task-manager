@@ -4,12 +4,13 @@ const symbols = `!@#$%^&*()-_=+[]{}|;:'\\",.<>?/\`~`;
 const AddTask = () => {
     const [title, setTitle] = useState('');
     const [errors, setErrors] = useState({});
+    const [successMessage, setSuccessMessage] = useState(``);
     const descriptionRef = useRef();
     const statusRef = useRef();
 
     const handleChange = e => {
-        setErrors({ ...errors, title: '' });
-        if (!e.target.value) setErrors(`Aggiungi un titolo!!!`)
+        setErrors({});
+        if (!e.target.value) setErrors({ ...errors, title: `Aggiungi un titolo!!!` })
         const titleIsValid = ![...e.target.value].some(char => symbols.includes(char));
         titleIsValid ?
             setTitle(e.target.value) :
@@ -18,6 +19,7 @@ const AddTask = () => {
 
     const handleSubmit = e => {
         e.preventDefault();
+        setErrors({});
         if (!title) return setErrors({ ...errors, title: `Aggiungi un titolo!!!` });
         if (!statusRef.current.value) return setErrors({ ...errors, status: 'Si prega selezionare uno stato!' })
         const formData = {
@@ -25,7 +27,11 @@ const AddTask = () => {
             description: descriptionRef.current.value,
             status: statusRef.current.value
         }
-        console.log(formData)
+        console.log(formData);
+        setSuccessMessage(`Form inviato con successo!`);
+        setTitle(``);
+        descriptionRef.current.value = '';
+        statusRef.current.value = 'To do'
     }
 
     return (
@@ -33,6 +39,10 @@ const AddTask = () => {
             <h1 className="mb-4 text-light">Aggiungi un Task</h1>
             <div className="table-responsive">
                 <form onSubmit={handleSubmit}>
+                    {successMessage &&
+                        <div className="mb-3 bg-success p-3 rounded">
+                            <span >{successMessage}</span>
+                        </div>}
                     <div className="mb-3">
                         <label htmlFor="title" className="form-label">Titolo</label>
                         <input
