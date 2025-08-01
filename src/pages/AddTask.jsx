@@ -1,15 +1,38 @@
-import { useState, useRef } from "react"
+import { useState, useRef } from "react";
+const symbols = `!@#$%^&*()-_=+[]{}|;:'\\",.<>?/\`~`;
 
 const AddTask = () => {
     const [title, setTitle] = useState('');
+    const [errors, setErrors] = useState({});
     const descriptionRef = useRef();
     const statusRef = useRef();
+
+    const handleChange = e => {
+        setErrors({ ...errors, title: '' });
+        if (!e.target.value) setErrors(`Aggiungi un titolo!!!`)
+        const titleIsValid = ![...e.target.value].some(char => symbols.includes(char));
+        titleIsValid ?
+            setTitle(e.target.value) :
+            setErrors({ ...errors, title: `Non è possibile aggiungere caratteri speciali` });
+    }
+
+    const handleSubmit = e => {
+        e.preventDefault();
+        if (!title) return setErrors({ ...errors, title: `Aggiungi un titolo!!!` });
+        if (!statusRef.current.value) return setErrors({ ...errors, status: 'Si prega selezionare uno stato!' })
+        const formData = {
+            title,
+            description: descriptionRef.current.value,
+            status: statusRef.current.value
+        }
+        console.log(formData)
+    }
 
     return (
         <div className="container mt-4">
             <h1 className="mb-4 text-light">Aggiungi un Task</h1>
             <div className="table-responsive">
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="title" className="form-label">Titolo</label>
                         <input
@@ -18,8 +41,9 @@ const AddTask = () => {
                             id="title"
                             placeholder="Inserisci il titolo della task..."
                             value={title}
-                            onChange={e => setTitle(e.target.value)}
+                            onChange={handleChange}
                         />
+                        {errors.title && <span className="text-danger">{errors.title}</span>}
                     </div>
                     <div className="mb-3">
                         <label htmlFor="description" className="form-label">Descrizione</label>
@@ -37,13 +61,19 @@ const AddTask = () => {
                             className="form-select bg-dark text-light"
                             id="status"
                             ref={statusRef}
-                            defaultValue=""
+                            defaultValue="To do"
                         >
                             <option value="">Seleziona uno stato...</option>
                             <option value="To do">To do</option>
                             <option value="Doing">Doing</option>
                             <option value="Done">Done</option>
                         </select>
+                        {errors.status && <span className="text-danger">{errors.status}</span>}
+                    </div>
+                    <div className="mb-3">
+                        <button type="submit" className="btn btn-light">
+                            Aggiungi il task
+                        </button>
                     </div>
                 </form>
             </div>
