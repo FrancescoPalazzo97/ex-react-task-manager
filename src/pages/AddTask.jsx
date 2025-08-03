@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-const symbols = `!@#$%^&*()-_=+[]{}|;:'\\",.<>?/\`~`;
 import { useGlobalContext } from "../hooks/useGlobalContext"
+const symbols = `!@#$%^&*()-_=+[]{}|;:'\\",.<>?/\`~`;
 
 const AddTask = () => {
     const [title, setTitle] = useState('');

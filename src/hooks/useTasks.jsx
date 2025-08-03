@@ -29,8 +29,12 @@ const useTasks = () => {
         return data;
     }
 
-    const removeTask = () => {
-
+    const removeTask = async (task) => {
+        const res = await fetch(`${API_TASKS}/${task.id}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+        return data;
     }
 
     const updateTask = () => {

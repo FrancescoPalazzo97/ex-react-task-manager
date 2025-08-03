@@ -11,7 +11,8 @@ const GlobalProvider = ({ children }) => {
     const value = {
         tasks,
         getTasks,
-        addTask
+        addTask,
+        removeTask
     };
 
     return (
