@@ -1,13 +1,19 @@
 import { useParams, useNavigate } from "react-router-dom"
 import { useGlobalContext } from "../hooks/useGlobalContext";
+import { useState } from "react";
+import Modal from "../components/Modal";
+import Loader from "../components/Loader";
 
 const TaskDetails = () => {
     const { id } = useParams();
     const { tasks, getTasks, removeTask } = useGlobalContext();
+    const [show, setShow] = useState(false);
 
     const navigate = useNavigate();
 
-    if (!tasks) return <div className="text-center text-light">Caricamento...</div>
+    if (!tasks) return (
+        <Loader />
+    )
 
     try {
         const task = tasks.find(task => task.id === parseInt(id));
@@ -27,24 +33,84 @@ const TaskDetails = () => {
         }
 
         return (
-            <div className="container">
-                <div className="row py-5">
-                    <div className="col">
-                        <div className="card text-center bg-dark text-light border-secondary">
-                            <div className="card-header fw-bold border-secondary fs-3 bg-secondary">
-                                {title}
+            <div className="container py-4">
+                <Modal
+                    title={`Elimina task`}
+                    content={`Sei sicuro di eliminare questa task?`}
+                    show={show}
+                    onConfirm={handleDelete}
+                    onClose={() => setShow(false)}
+                />
+
+                <div className="row justify-content-center">
+                    <div className="col-12 col-lg-8">
+                        <div className="card bg-dark text-light border-secondary shadow-lg">
+                            <div className="card-header text-center border-secondary">
+                                <h1 className="card-title mb-0 fw-bold text-ligth">{title}</h1>
+                                <small className="text-secondary">
+                                    <i className="fa-regular fa-calendar me-1"></i>
+                                    {new Date(createdAt).toLocaleString('it-IT')}
+                                </small>
                             </div>
-                            <div className="card-body d-flex">
-                                <div className="card-text w-50">
-                                    <h4>Descrizione</h4>
-                                    <p>{description}</p>
+
+                            <div className="card-body p-4">
+                                <div className="row g-4">
+                                    <div className="col-12 col-md-8">
+                                        <div className="mb-4">
+                                            <h4 className="text-secondary mb-3">
+                                                <i className="fa-solid fa-file-lines me-2"></i>
+                                                Descrizione
+                                            </h4>
+                                            <div className="bg-secondary bg-opacity-25 p-3 rounded">
+                                                <p className="mb-0 lead">{description || 'Nessuna descrizione disponibile'}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <h5 className="text-secondary mb-2">Status</h5>
+                                            <span className={`badge fs-6 ${status === 'Done' ? 'bg-success' :
+                                                status === 'Doing' ? 'bg-warning text-dark' :
+                                                    status === 'To do' ? 'bg-danger' :
+                                                        'bg-secondary'
+                                                }`}>
+                                                <i className={`me-2 ${status === 'Done' ? 'fa-solid fa-check' :
+                                                    status === 'Doing' ? 'fa-solid fa-spinner' :
+                                                        status === 'To do' ? 'fa-solid fa-clock' :
+                                                            'fa-solid fa-question'
+                                                    }`}></i>
+                                                {status}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-12 col-md-4">
+                                        <div className="d-flex flex-column gap-3">
+                                            <button
+                                                className="btn btn-outline-primary btn-lg"
+                                                onClick={() => navigate(`/`)}
+                                            >
+                                                <i class="fa-solid fa-arrow-left-long me-2"></i>
+                                                Indietro
+                                            </button>
+
+                                            <button
+                                                className="btn btn-outline-warning btn-lg"
+                                                onClick={() => navigate(`/edit-task/${id}`)}
+                                            >
+                                                <i class="fa-solid fa-pen-to-square me-2"></i>
+                                                Modifica
+                                            </button>
+
+                                            <button
+                                                className="btn btn-danger btn-lg"
+                                                onClick={() => setShow(true)}
+                                            >
+                                                <i class="fa-solid fa-trash me-2"></i>
+                                                Elimina
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="w-50">
-                                    <button className="btn btn-danger" onClick={handleDelete}>Elimina</button>
-                                </div>
-                            </div>
-                            <div className="card-footer text-light border-secondary bg-secondary">
-                                {new Date(task.createdAt).toLocaleString('it-IT')}
                             </div>
                         </div>
                     </div>
@@ -53,7 +119,24 @@ const TaskDetails = () => {
         )
     } catch (e) {
         console.error(`Errore: ${e}`);
-        return <div className="text-center text-light py-5 fs-1">Questa task non esiste</div>
+        return (
+            <div className="container py-5">
+                <div className="row justify-content-center">
+                    <div className="col-12 col-md-6">
+                        <div className="alert alert-danger text-center">
+                            <h2 className="alert-heading">{e.message}</h2>
+                            <p className="mb-3">La task che stai cercando non esiste o è stata eliminata.</p>
+                            <button
+                                className="btn btn-outline-primary"
+                                onClick={() => navigate('/')}
+                            >
+                                <span>Torna alla lista</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
 
