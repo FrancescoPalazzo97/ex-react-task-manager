@@ -1,11 +1,12 @@
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import TaskRow from "../components/TaskRow";
 import { memo } from "react";
+import Loader from "../components/Loader";
 
 const TaskList = memo(() => {
     const { tasks } = useGlobalContext();
 
-    if (!tasks) return <div className="text-center text-light">Caricamento...</div>
+    if (!tasks) return <Loader />
 
     return (
         <div className="container mt-4">

@@ -36,16 +36,14 @@ const AddTask = () => {
             status: statusRef.current.value
         }
 
-        const data = await addTask(formData);
-
-        if (data.success) {
-            getTasks();
+        try {
+            await addTask(formData);
             setSuccessMessage(`Form inviato con successo!`);
             setTitle(``);
             descriptionRef.current.value = '';
-            statusRef.current.value = 'To do'
-        } else {
-            setErrorMessage(data.message);
+            statusRef.current.value = 'To do';
+        } catch (e) {
+            setErrorMessage(e.message);
         }
     }
 
@@ -100,7 +98,6 @@ const AddTask = () => {
                                 ref={statusRef}
                                 defaultValue="To do"
                             >
-                                <option value="">Seleziona uno stato...</option>
                                 <option value="To do">To do</option>
                                 <option value="Doing">Doing</option>
                                 <option value="Done">Done</option>

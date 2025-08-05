@@ -3,10 +3,12 @@ import { useGlobalContext } from "../hooks/useGlobalContext";
 import { useState } from "react";
 import Modal from "../components/Modal";
 import Loader from "../components/Loader";
+import EditTaskModal from "../components/EditTaskModal";
+
 
 const TaskDetails = () => {
     const { id } = useParams();
-    const { tasks, getTasks, removeTask } = useGlobalContext();
+    const { tasks, removeTask, updateTask } = useGlobalContext();
     const [show, setShow] = useState(false);
 
     const navigate = useNavigate();
@@ -21,25 +23,42 @@ const TaskDetails = () => {
         const { title, description, status, createdAt } = task;
 
         const handleDelete = async () => {
-            const data = await removeTask(task);
-            if (data.success) {
-                getTasks();
-                navigate(`/`);
+            try {
+                await removeTask(task.id);
+                alert('Task eliminata con successo');
+                navigate('/');
+            } catch (e) {
+                alert(`Errore: ${e}`)
+                console.error(`Errore: ${e.message}`);
+            }
+        }
 
-            } else {
-                alert(`Errore: ${data.message}`)
-                console.error(`Errore: ${data.message}`);
+        const handleEdit = async updatedTask => {
+            try {
+                await updateTask(updatedTask);
+                alert('Task modificata con successo!');
+                setShow(false);
+            } catch (e) {
+                alert(`Errore: ${e}`)
+                console.error(`Errore: ${e.message}`);
             }
         }
 
         return (
             <div className="container py-4">
+
                 <Modal
                     title={`Elimina task`}
                     content={`Sei sicuro di eliminare questa task?`}
-                    show={show}
+                    show={show === 'delete'}
                     onConfirm={handleDelete}
                     onClose={() => setShow(false)}
+                />
+                <EditTaskModal
+                    show={show === 'edit'}
+                    onClose={() => setShow(false)}
+                    task={task}
+                    onSave={handleEdit}
                 />
 
                 <div className="row justify-content-center">
@@ -89,23 +108,23 @@ const TaskDetails = () => {
                                                 className="btn btn-outline-primary btn-lg"
                                                 onClick={() => navigate(`/`)}
                                             >
-                                                <i class="fa-solid fa-arrow-left-long me-2"></i>
+                                                <i className="fa-solid fa-arrow-left-long me-2"></i>
                                                 Indietro
                                             </button>
 
                                             <button
                                                 className="btn btn-outline-warning btn-lg"
-                                                onClick={() => navigate(`/edit-task/${id}`)}
+                                                onClick={() => setShow('edit')}
                                             >
-                                                <i class="fa-solid fa-pen-to-square me-2"></i>
+                                                <i className="fa-solid fa-pen-to-square me-2"></i>
                                                 Modifica
                                             </button>
 
                                             <button
                                                 className="btn btn-danger btn-lg"
-                                                onClick={() => setShow(true)}
+                                                onClick={() => setShow('delete')}
                                             >
-                                                <i class="fa-solid fa-trash me-2"></i>
+                                                <i className="fa-solid fa-trash me-2"></i>
                                                 Elimina
                                             </button>
                                         </div>

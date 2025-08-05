@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import useTasks from "../hooks/useTasks"
-const API_TASKS = import.meta.env.VITE_API_TASKS;
+import { createContext } from "react";
+import useTasks from "../hooks/useTasks";
 
 const GlobalContext = createContext();
 
@@ -12,7 +11,8 @@ const GlobalProvider = ({ children }) => {
         tasks,
         getTasks,
         addTask,
-        removeTask
+        removeTask,
+        updateTask
     };
 
     return (

@@ -14,31 +14,44 @@ const useTasks = () => {
         getTasks();
     }, []);
 
-    const addTask = async (taskObj = {}) => {
+    const addTask = async (task = {}) => {
 
         const res = await fetch(API_TASKS, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(taskObj)
+            body: JSON.stringify(task)
         });
 
-        const data = await res.json();
-        console.log(data);
-        return data;
+        const { success, message } = await res.json();
+        if (!success) throw new Error(message)
+        getTasks();
     }
 
-    const removeTask = async (task) => {
-        const res = await fetch(`${API_TASKS}/${task.id}`, {
+    const removeTask = async (taskId) => {
+        const res = await fetch(`${API_TASKS}/${taskId}`, {
             method: 'DELETE'
         });
-        const data = await res.json();
-        return data;
+        const { success, message } = await res.json();
+        if (!success) throw new Error(message);
+        getTasks();
     }
 
-    const updateTask = () => {
+    const updateTask = async (updatedTask) => {
+        const res = await fetch(`${API_TASKS}/${updatedTask.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedTask)
+        });
 
+        const { success, message } = await res.json();
+
+        if (!success) throw new Error(message);
+
+        getTasks();
     }
 
     return [tasks, getTasks, addTask, removeTask, updateTask];

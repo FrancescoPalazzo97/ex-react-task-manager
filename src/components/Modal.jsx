@@ -31,7 +31,7 @@ const Modal = ({
                         ></button>
                     </div>
                     <div className="modal-body py-4">
-                        <p className="mb-0">{content}</p>
+                        <div className="mb-0">{content}</div>
                     </div>
                     <div className="modal-footer border-secondary">
                         <button
