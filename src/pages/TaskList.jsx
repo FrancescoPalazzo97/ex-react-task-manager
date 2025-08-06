@@ -1,6 +1,6 @@
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import TaskRow from "../components/TaskRow";
-import { memo, useState, useMemo } from "react";
+import { memo, useState, useMemo, useCallback } from "react";
 import Loader from "../components/Loader";
 
 const TaskList = memo(() => {
@@ -8,14 +8,14 @@ const TaskList = memo(() => {
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState(1);
 
-    const handleOrderClick = (key) => {
+    const handleOrderClick = useCallback(key => {
         if (key === sortBy) {
             setSortOrder(prev => prev === 1 ? -1 : 1);
         } else {
             setSortBy(key);
             setSortOrder(1);
         }
-    }
+    }, [sortBy]);
 
     useMemo(() => {
         if (!tasks) return;
@@ -58,7 +58,7 @@ const TaskList = memo(() => {
                                 scope="col"
                                 className="fw-semibold cursor-pointer"
                                 onClick={() => handleOrderClick('title')}
-                                style={{width: '40%'}}
+                                style={{ width: '40%' }}
                             >
                                 Nome
                                 {sortBy === 'title' &&
@@ -71,7 +71,7 @@ const TaskList = memo(() => {
                                 scope="col"
                                 className="fw-semibold cursor-pointer"
                                 onClick={() => handleOrderClick('status')}
-                                style={{width: '20%'}}
+                                style={{ width: '20%' }}
                             >
                                 Stato
                                 {sortBy === 'status' &&
@@ -84,7 +84,7 @@ const TaskList = memo(() => {
                                 scope="col"
                                 className="fw-semibold cursor-pointer"
                                 onClick={() => handleOrderClick('createdAt')}
-                                style={{width: '40%'}}
+                                style={{ width: '40%' }}
                             >
                                 Data di Creazione
                                 {sortBy === 'createdAt' &&
