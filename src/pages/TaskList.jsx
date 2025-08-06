@@ -78,8 +78,8 @@ const TaskList = memo(() => {
         <div className="container mt-4">
             <h1 className="mb-4 text-light fw-bold">Lista Task</h1>
             <div className="mb-3">
-                <div className="row">
-                    <div className="col-12 col-md-6 col-lg-4">
+                <div className="row justify-content-between">
+                    <div className="col-9 col-md-6 col-lg-4">
                         <input
                             type="text"
                             className="form-control bg-dark text-light border-secondary"
@@ -87,6 +87,14 @@ const TaskList = memo(() => {
                             onChange={e => debouncedSearch(e.target.value)}
                         />
                     </div>
+                    {selectedTaskIds > 0 &&
+                        <div className="col-3 text-end">
+                            <button className="btn btn-danger">
+                                <i class="fa-solid fa-trash me-0 me-md-1" />
+                                <span className="d-none d-md-inline">Elimina selezionati</span>
+                            </button>
+                        </div>
+                    }
                 </div>
             </div>
             <div className="table-responsive">
