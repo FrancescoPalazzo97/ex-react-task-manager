@@ -65,7 +65,7 @@ const EditTaskModal = ({
             title="Modifica Task"
             content={
                 <form ref={editFormRef} onSubmit={handleSubmit} className="needs-validation" noValidate>
-                    <div className="mb-3">
+                    <div className={errors.title ? "mb-0" : "mb-4"}>
                         <label htmlFor="edit-title" className="form-label">Titolo</label>
                         <input
                             type="text"
@@ -90,7 +90,7 @@ const EditTaskModal = ({
                         />
                     </div>
 
-                    <div className="mb-4">
+                    <div className={errors.status ? "mb-0" : "mb-4"}>
                         <label htmlFor="edit-status" className="form-label">Stato</label>
                         <select
                             className={`form-select bg-dark text-light ${errors.status ? 'is-invalid' : ''}`}
