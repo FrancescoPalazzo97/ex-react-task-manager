@@ -4,6 +4,7 @@ import { useState } from "react";
 import Modal from "../components/Modal";
 import Loader from "../components/Loader";
 import EditTaskModal from "../components/EditTaskModal";
+import useDate from "../hooks/useDate";
 
 
 const TaskDetails = () => {
@@ -68,7 +69,7 @@ const TaskDetails = () => {
                                 <h1 className="card-title mb-0 fw-bold text-ligth">{title}</h1>
                                 <small className="text-secondary">
                                     <i className="fa-regular fa-calendar me-1"></i>
-                                    {new Date(createdAt).toLocaleString('it-IT')}
+                                    {useDate(createdAt, 'dddd DD MMMM YYYY HH:mm:ss')}
                                 </small>
                             </div>
 
