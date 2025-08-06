@@ -3,3 +3,7 @@
     color: #adb5bd;
     opacity: 1;
 }
+
+.cursor-pointer {
+    cursor: pointer;
+}
