@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const TaskRow = memo(({
     task = {},
-    checked = false,
+    checked,
     onToggle = () => { }
 }) => {
 
@@ -27,8 +27,8 @@ const TaskRow = memo(({
                     <input
                         type="checkbox"
                         className="form-check-input bg-dark border-secondary"
-                    // checked={checked}
-                    // onClick={onToggle}
+                        checked={checked}
+                        onChange={() => onToggle(task.id)}
                     />
                     <Link to={`/task/${task.id}`} className="link-light link-opacity-50-hover text-decoration-none">{task.title}</Link>
                 </div>

@@ -19,6 +19,15 @@ const TaskList = memo(() => {
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState(1);
     const [searchQuery, setSearchQuery] = useState(``);
+    const [selectedTaskIds, setSelectedTaskIds] = useState([]);
+
+    const toggleSelection = taskId => {
+        if (selectedTaskIds.includes(taskId)) {
+            setSelectedTaskIds(prev => prev.filter(id => id !== taskId));
+        } else {
+            setSelectedTaskIds(prev => [...prev, taskId]);
+        }
+    }
 
     const debouncedSearch = useCallback(debounce(setSearchQuery, 500), [])
 
@@ -127,7 +136,12 @@ const TaskList = memo(() => {
                     </thead>
                     <tbody>
                         {sortedTasks.map(task => (
-                            <TaskRow key={task.id} task={task} />
+                            <TaskRow
+                                key={task.id}
+                                task={task}
+                                checked={selectedTaskIds.includes(task.id)}
+                                onToggle={toggleSelection}
+                            />
                         ))}
                     </tbody>
                 </table>
