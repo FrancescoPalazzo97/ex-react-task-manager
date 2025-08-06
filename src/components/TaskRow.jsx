@@ -1,7 +1,11 @@
 import { memo } from "react"
 import { Link } from "react-router-dom";
 
-const TaskRow = memo(({ task }) => {
+const TaskRow = memo(({
+    task = {},
+    checked = false,
+    onToggle = () => { }
+}) => {
 
     const setStatus = status => {
         switch (status) {
@@ -19,7 +23,15 @@ const TaskRow = memo(({ task }) => {
     return (
         <tr>
             <td>
-                <Link to={`/task/${task.id}`} className="link-light link-opacity-50-hover text-decoration-none">{task.title}</Link>
+                <div className="d-flex align-items-center gap-3">
+                    <input
+                        type="checkbox"
+                        className="form-check-input bg-dark border-secondary"
+                    // checked={checked}
+                    // onClick={onToggle}
+                    />
+                    <Link to={`/task/${task.id}`} className="link-light link-opacity-50-hover text-decoration-none">{task.title}</Link>
+                </div>
             </td>
             <td>
                 <span className={`badge ${setStatus(task.status)}`}>
