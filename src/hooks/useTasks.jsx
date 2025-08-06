@@ -38,6 +38,35 @@ const useTasks = () => {
         getTasks();
     }
 
+    const removeMultipleTasks = async ids => {
+        const promises = ids.map(async id => {
+            const res = await fetch(`${API_TASKS}/${id}`, {
+                method: 'DELETE'
+            });
+            return await res.json();
+        });
+        const responses = await Promise.allSettled(promises);
+
+        const fullfilledRosponses = [];
+        const rejectedResponses = [];
+
+        responses.forEach((res, i) => {
+            const taskId = ids[i];
+            res.status === 'fulfilled' && res.value.success
+                ? fullfilledRosponses.push(taskId)
+                : rejectedResponses.push(taskId);
+        })
+
+        if (fullfilledRosponses.length > 0) {
+            setTasks(prev => prev.filter(t => !fullfilledRosponses.includes(t.id)));
+        }
+
+        if (rejectedResponses.length > 0) {
+            throw new Error(`Errore nell'eliminazione delle task con id: ${rejectedResponses.join(", ")}`);
+        }
+
+    }
+
     const updateTask = async (updatedTask) => {
         const res = await fetch(`${API_TASKS}/${updatedTask.id}`, {
             method: 'PUT',
@@ -54,7 +83,7 @@ const useTasks = () => {
         getTasks();
     }
 
-    return [tasks, getTasks, addTask, removeTask, updateTask];
+    return [tasks, getTasks, addTask, removeTask, removeMultipleTasks, updateTask];
 }
 
 export default useTasks;

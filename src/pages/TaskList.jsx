@@ -15,10 +15,19 @@ function debounce(callback, delay) {
 
 
 const TaskList = memo(() => {
-    const { tasks } = useGlobalContext();
+    const { tasks, removeMultipleTasks } = useGlobalContext();
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState(1);
     const [searchQuery, setSearchQuery] = useState(``);
+    const [selectedTaskIds, setSelectedTaskIds] = useState([]);
+
+    const toggleSelection = taskId => {
+        if (selectedTaskIds.includes(taskId)) {
+            setSelectedTaskIds(prev => prev.filter(id => id !== taskId));
+        } else {
+            setSelectedTaskIds(prev => [...prev, taskId]);
+        }
+    }
 
     const debouncedSearch = useCallback(debounce(setSearchQuery, 500), [])
 
@@ -62,6 +71,18 @@ const TaskList = memo(() => {
             })
     }, [tasks, sortBy, sortOrder, searchQuery])
 
+    const handleDelete = async () => {
+        try {
+            await removeMultipleTasks(selectedTaskIds);
+            alert(`Task eliminate con successo!`);
+            setSelectedTaskIds([]);
+        } catch (e) {
+            console.error(e);
+            alert(e.message);
+
+        }
+    }
+
     if (!tasks) return <Loader />
 
 
@@ -69,8 +90,8 @@ const TaskList = memo(() => {
         <div className="container mt-4">
             <h1 className="mb-4 text-light fw-bold">Lista Task</h1>
             <div className="mb-3">
-                <div className="row">
-                    <div className="col-12 col-md-6 col-lg-4">
+                <div className="row justify-content-between">
+                    <div className="col-9 col-md-6 col-lg-4">
                         <input
                             type="text"
                             className="form-control bg-dark text-light border-secondary"
@@ -78,6 +99,14 @@ const TaskList = memo(() => {
                             onChange={e => debouncedSearch(e.target.value)}
                         />
                     </div>
+                    {selectedTaskIds.length > 0 &&
+                        <div className="col-3 text-end">
+                            <button className="btn btn-danger" onClick={handleDelete}>
+                                <i className="fa-solid fa-trash me-0 me-md-1" />
+                                <span className="d-none d-md-inline">Elimina selezionati</span>
+                            </button>
+                        </div>
+                    }
                 </div>
             </div>
             <div className="table-responsive">
@@ -127,7 +156,12 @@ const TaskList = memo(() => {
                     </thead>
                     <tbody>
                         {sortedTasks.map(task => (
-                            <TaskRow key={task.id} task={task} />
+                            <TaskRow
+                                key={task.id}
+                                task={task}
+                                checked={selectedTaskIds.includes(task.id)}
+                                onToggle={toggleSelection}
+                            />
                         ))}
                     </tbody>
                 </table>
