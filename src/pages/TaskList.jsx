@@ -15,7 +15,7 @@ function debounce(callback, delay) {
 
 
 const TaskList = memo(() => {
-    const { tasks } = useGlobalContext();
+    const { tasks, removeMultipleTasks } = useGlobalContext();
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState(1);
     const [searchQuery, setSearchQuery] = useState(``);
@@ -71,6 +71,18 @@ const TaskList = memo(() => {
             })
     }, [tasks, sortBy, sortOrder, searchQuery])
 
+    const handleDelete = async () => {
+        try {
+            await removeMultipleTasks(selectedTaskIds);
+            alert(`Task eliminate con successo!`);
+            setSelectedTaskIds([]);
+        } catch (e) {
+            console.error(e);
+            alert(e.message);
+
+        }
+    }
+
     if (!tasks) return <Loader />
 
 
@@ -87,10 +99,10 @@ const TaskList = memo(() => {
                             onChange={e => debouncedSearch(e.target.value)}
                         />
                     </div>
-                    {selectedTaskIds > 0 &&
+                    {selectedTaskIds.length > 0 &&
                         <div className="col-3 text-end">
-                            <button className="btn btn-danger">
-                                <i class="fa-solid fa-trash me-0 me-md-1" />
+                            <button className="btn btn-danger" onClick={handleDelete}>
+                                <i className="fa-solid fa-trash me-0 me-md-1" />
                                 <span className="d-none d-md-inline">Elimina selezionati</span>
                             </button>
                         </div>

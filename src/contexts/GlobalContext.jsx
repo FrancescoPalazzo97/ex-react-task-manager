@@ -5,13 +5,14 @@ const GlobalContext = createContext();
 
 const GlobalProvider = ({ children }) => {
 
-    const [tasks, getTasks, addTask, removeTask, updateTask] = useTasks();
+    const [tasks, getTasks, addTask, removeTask, removeMultipleTasks, updateTask] = useTasks();
 
     const value = {
         tasks,
         getTasks,
         addTask,
         removeTask,
+        removeMultipleTasks,
         updateTask
     };
 
