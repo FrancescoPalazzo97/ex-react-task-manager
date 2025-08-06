@@ -1,5 +1,7 @@
 import { memo } from "react"
 import { Link } from "react-router-dom";
+import dayjs from "dayjs";
+import 'dayjs/locale/it';
 
 const TaskRow = memo(({
     task = {},
@@ -20,6 +22,14 @@ const TaskRow = memo(({
         }
     }
 
+    const getDate = () => {
+        dayjs.locale('it');
+
+        if (task.createdAt) return dayjs(task.createdAt).format('dddd DD MMMM YYYY');
+
+        return 'N/A';
+    }
+
     return (
         <tr>
             <td>
@@ -38,7 +48,7 @@ const TaskRow = memo(({
                     {task.status}
                 </span>
             </td>
-            <td>{task.createdAt ? new Date(task.createdAt).toLocaleDateString('it-IT') : 'N/A'}</td>
+            <td>{getDate()}</td>
         </tr>
     )
 })
