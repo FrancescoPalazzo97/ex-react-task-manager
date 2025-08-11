@@ -16,6 +16,10 @@ const useTasks = () => {
 
     const addTask = async (task = {}) => {
 
+        if (tasks.some(t => t.title.toLowerCase() === task.title.toLowerCase().trim())) {
+            throw new Error(`Il task è già presente`);
+        }
+
         const res = await fetch(API_TASKS, {
             method: 'POST',
             headers: {
@@ -47,18 +51,18 @@ const useTasks = () => {
         });
         const responses = await Promise.allSettled(promises);
 
-        const fullfilledRosponses = [];
+        const fulfilledResponses = [];
         const rejectedResponses = [];
 
         responses.forEach((res, i) => {
             const taskId = ids[i];
             res.status === 'fulfilled' && res.value.success
-                ? fullfilledRosponses.push(taskId)
+                ? fulfilledResponses.push(taskId)
                 : rejectedResponses.push(taskId);
         })
 
-        if (fullfilledRosponses.length > 0) {
-            setTasks(prev => prev.filter(t => !fullfilledRosponses.includes(t.id)));
+        if (fulfilledResponses.length > 0) {
+            setTasks(prev => prev.filter(t => !fulfilledResponses.includes(t.id)));
         }
 
         if (rejectedResponses.length > 0) {
@@ -68,6 +72,11 @@ const useTasks = () => {
     }
 
     const updateTask = async (updatedTask) => {
+
+        if (tasks.some(t => t.title.toLowerCase() === updatedTask.title.toLowerCase().trim())) {
+            throw new Error(`Il task è già presente`);
+        }
+
         const res = await fetch(`${API_TASKS}/${updatedTask.id}`, {
             method: 'PUT',
             headers: {
