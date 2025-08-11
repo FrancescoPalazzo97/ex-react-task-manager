@@ -1,5 +1,6 @@
 import { memo } from "react"
 import { Link } from "react-router-dom";
+import useDate from "../hooks/useDate";
 
 const TaskRow = memo(({
     task = {},
@@ -38,7 +39,7 @@ const TaskRow = memo(({
                     {task.status}
                 </span>
             </td>
-            <td>{task.createdAt ? new Date(task.createdAt).toLocaleDateString('it-IT') : 'N/A'}</td>
+            <td>{useDate(task.createdAt, 'dddd DD MMMM YYYY')}</td>
         </tr>
     )
 })

@@ -1,64 +1,52 @@
-import { useState, useEffect } from "react";
+import { useReducer, useEffect } from "react";
+import useFetch from "./useFetch";
+import tasksReducer from "./tasksReducer";
 const API_TASKS = import.meta.env.VITE_API_TASKS;
 
 const useTasks = () => {
-    const [tasks, setTasks] = useState(null);
+    const [tasks, dispatch] = useReducer(tasksReducer, []);
 
     const getTasks = async () => {
-        const res = await fetch(API_TASKS);
-        const data = await res.json();
-        setTasks(data);
+        dispatch({ type: 'LOAD_TASKS', payload: await useFetch(API_TASKS) });
     }
 
     useEffect(() => {
         getTasks();
     }, []);
 
-    const addTask = async (task = {}) => {
+    const addTask = async (newTask = {}) => {
 
-        const res = await fetch(API_TASKS, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(task)
-        });
+        if (tasks.some(t => t.title.toLowerCase() === newTask.title.toLowerCase().trim())) {
+            throw new Error(`Il task è già presente`);
+        }
 
-        const { success, message } = await res.json();
+        const { success, message, task } = await useFetch(API_TASKS, 'POST', newTask);
         if (!success) throw new Error(message)
-        getTasks();
+        dispatch({ type: 'ADD_TASK', payload: task });
     }
 
     const removeTask = async (taskId) => {
-        const res = await fetch(`${API_TASKS}/${taskId}`, {
-            method: 'DELETE'
-        });
-        const { success, message } = await res.json();
+        const { success, message } = await useFetch(`${API_TASKS}/${taskId}`, 'DELETE');
         if (!success) throw new Error(message);
-        getTasks();
+        dispatch({ type: 'REMOVE_TASK', payload: taskId });
     }
 
     const removeMultipleTasks = async ids => {
-        const promises = ids.map(async id => {
-            const res = await fetch(`${API_TASKS}/${id}`, {
-                method: 'DELETE'
-            });
-            return await res.json();
-        });
+        const promises = ids.map(async id => await useFetch(`${API_TASKS}/${id}`, 'DELETE'));
         const responses = await Promise.allSettled(promises);
 
-        const fullfilledRosponses = [];
+        const fulfilledResponses = [];
         const rejectedResponses = [];
 
         responses.forEach((res, i) => {
             const taskId = ids[i];
             res.status === 'fulfilled' && res.value.success
-                ? fullfilledRosponses.push(taskId)
+                ? fulfilledResponses.push(taskId)
                 : rejectedResponses.push(taskId);
         })
 
-        if (fullfilledRosponses.length > 0) {
-            setTasks(prev => prev.filter(t => !fullfilledRosponses.includes(t.id)));
+        if (fulfilledResponses.length > 0) {
+            dispatch({ type: 'REMOVE_MULTIPLE_TASKS', payload: fulfilledResponses });
         }
 
         if (rejectedResponses.length > 0) {
@@ -68,19 +56,18 @@ const useTasks = () => {
     }
 
     const updateTask = async (updatedTask) => {
-        const res = await fetch(`${API_TASKS}/${updatedTask.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updatedTask)
-        });
 
-        const { success, message } = await res.json();
+        const taskWithSameTitle = tasks.find(t => t.title.toLowerCase() === updatedTask.title.toLowerCase().trim());
+
+        if (taskWithSameTitle && taskWithSameTitle.id !== updatedTask.id) {
+            throw new Error(`Il task è già presente`);
+        }
+
+        const { success, message } = await useFetch(`${API_TASKS}/${updatedTask.id}`, 'PUT', updatedTask);
 
         if (!success) throw new Error(message);
 
-        getTasks();
+        dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
     }
 
     return [tasks, getTasks, addTask, removeTask, removeMultipleTasks, updateTask];
