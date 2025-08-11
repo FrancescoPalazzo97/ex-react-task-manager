@@ -1,22 +1,23 @@
-import { useState, useEffect } from "react";
+import { useReducer, useEffect } from "react";
+import tasksReducer from "./tasksReducer";
 const API_TASKS = import.meta.env.VITE_API_TASKS;
 
 const useTasks = () => {
-    const [tasks, setTasks] = useState(null);
+    const [tasks, dispatch] = useReducer(tasksReducer, []);
 
     const getTasks = async () => {
         const res = await fetch(API_TASKS);
         const data = await res.json();
-        setTasks(data);
+        dispatch({ type: 'LOAD_TASKS', payload: data });
     }
 
     useEffect(() => {
         getTasks();
     }, []);
 
-    const addTask = async (task = {}) => {
+    const addTask = async (newTask = {}) => {
 
-        if (tasks.some(t => t.title.toLowerCase() === task.title.toLowerCase().trim())) {
+        if (tasks.some(t => t.title.toLowerCase() === newTask.title.toLowerCase().trim())) {
             throw new Error(`Il task è già presente`);
         }
 
@@ -25,12 +26,12 @@ const useTasks = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(task)
+            body: JSON.stringify(newTask)
         });
 
-        const { success, message } = await res.json();
+        const { success, message, task } = await res.json();
         if (!success) throw new Error(message)
-        getTasks();
+        dispatch({ type: 'ADD_TASK', payload: task });
     }
 
     const removeTask = async (taskId) => {
@@ -39,7 +40,7 @@ const useTasks = () => {
         });
         const { success, message } = await res.json();
         if (!success) throw new Error(message);
-        getTasks();
+        dispatch({ type: 'REMOVE_TASK', payload: taskId });
     }
 
     const removeMultipleTasks = async ids => {
@@ -62,7 +63,7 @@ const useTasks = () => {
         })
 
         if (fulfilledResponses.length > 0) {
-            setTasks(prev => prev.filter(t => !fulfilledResponses.includes(t.id)));
+            dispatch({ type: 'REMOVE_MULTIPLE_TASKS', payload: fulfilledResponses });
         }
 
         if (rejectedResponses.length > 0) {
@@ -73,7 +74,9 @@ const useTasks = () => {
 
     const updateTask = async (updatedTask) => {
 
-        if (tasks.some(t => t.title.toLowerCase() === updatedTask.title.toLowerCase().trim())) {
+        const taskWithSameTitle = tasks.find(t => t.title.toLowerCase() === updatedTask.title.toLowerCase().trim());
+
+        if (taskWithSameTitle && taskWithSameTitle.id !== updatedTask.id) {
             throw new Error(`Il task è già presente`);
         }
 
@@ -89,7 +92,7 @@ const useTasks = () => {
 
         if (!success) throw new Error(message);
 
-        getTasks();
+        dispatch({ type: 'UPDATE_TASK', payload: updatedTask });
     }
 
     return [tasks, getTasks, addTask, removeTask, removeMultipleTasks, updateTask];
